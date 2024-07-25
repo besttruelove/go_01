@@ -111,18 +111,6 @@ func main() {
 	if !config.Combine {
 		return
 	}
-	for z := config.MinLevel; z <= config.MaxLevel; z++ {
-		perTileWidth := coordinate.WebMercatorWidth / math.Pow(2, float64(z))
-		leftTileX := int(leftTop.X / perTileWidth)
-		rightTileX := int(rightBottom.X / perTileWidth)
-		topTileY := int(leftTop.Y / perTileWidth)
-		bottomTileY := int(rightBottom.Y / perTileWidth)
-
-		err := combine(leftTileX, rightTileX, topTileY, bottomTileY, z, config)
-		if err != nil {
-			fmt.Printf("combine pic error: %+v\n", err)
-		}
-	}
 }
 
 func getPic(task Task) error {
@@ -134,8 +122,8 @@ func getPic(task Task) error {
 	filePath := getPath(task.config, task.x, task.y, task.z)
 	url := coordinate.WebMercatorTileToURLWithTiltStyle(task.config.MapType, task.x, task.y, task.z,
 		coordinate.TiltStyle{GoogleWithLabel: task.config.GoogleWithLabel})
-
-	return Download(url, filePath)
+	result := strings.Replace(url, "lyrs=y", "lyrs=s", 1)
+	return Download(result, filePath)
 }
 
 func getPath(config MapConfig, x, y, z int) string {
